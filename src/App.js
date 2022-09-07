@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import "./App.css";
 import Form from "./form"
-import Home from "./calculator"
+import Calculator from "./calculator"
 import Credits from "./credits";
 import Telemetry from "./telemetry"
+import Home from "./Home"
 import Test from "./test"
 
 
 // @material-tailwind/react
 import { ThemeProvider } from "@material-tailwind/react";
-import Calculator from "./calculator";
 
 const App = () => {
     const [laptimes, setLaptimes] = useState({})
@@ -38,15 +38,14 @@ const App = () => {
     return (
         <ThemeProvider>
             <Router>
-                <div className="bg-gray-50 min-h-screen w-auto">
-                    <Routes>
-                        <Route path="/" element={<Calculator lapTimes={laptimes} setLapTimes={settime} />} />
-                        <Route path="/form" element={<Form laptimes={laptimes} setLaptimes={settime} />} />
-                        <Route path="/credits" element={<Credits />} />
-                        <Route path="/telemetry" element={<Telemetry />} />
-                        <Route path="/test" element={<Test />} />
-                    </Routes>
-                </div>
+                <Routes>
+                    <Route path="/" element={<Home />}/>
+                    <Route path="/calculator" element={<Calculator lapTimes={laptimes} setLapTimes={settime} />} />
+                    <Route path="/form" element={<Form laptimes={laptimes} setLaptimes={settime} />} />
+                    <Route path="/credits" element={<Credits />} />
+                    <Route path="/telemetry" element={<Telemetry />} />
+                    <Route path="/test" element={<Test />} />
+                </Routes>
             </Router>
         </ThemeProvider>
 

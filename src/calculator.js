@@ -18,6 +18,11 @@ function Calculator(props) {
 
     return (
         <div className="text-center">
+            <div className='flex justify-center'>
+                <Link to="/">
+                    <img className="left-2 h-[40px] w-[40px] top-1" src='https://cdn-icons-png.flaticon.com/512/60/60817.png' />
+                </Link>
+            </div>
             <div className="p-10 bg-gray-50 min-h-screen w-auto font-sans text-3xl font-extrabold text-gray-900">
                 F1 22 Difficulty Calculator
                 <h1 className='mt-10 font-normal text-2xl'>

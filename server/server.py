@@ -1,3 +1,4 @@
+from pickle import FALSE
 import requests
 import json
 from bs4 import BeautifulSoup
@@ -69,6 +70,12 @@ def calculatedifficulty():
         }
 
 
+listener = False
+
+@app.route("/api/stoplisten", methods=['get'])
+def stoplisten():
+    pass
+
 @app.route("/api/listen", methods=['get'])
 def listen():
     def stream():
@@ -79,7 +86,7 @@ def listen():
             yield f"id:1\ndata: {msg}\nevent: update\n\n"
             # counter += 1
             # time.sleep(1/60)
-    return Response(stream(), mimetype='text/event-stream')
+    if not listener: return Response(stream(), mimetype='text/event-stream')
 
 
 if __name__ == "__main__":

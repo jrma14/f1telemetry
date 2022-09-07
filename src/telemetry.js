@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { Progress, Switch } from '@material-tailwind/react'
+import { Progress, Radio } from '@material-tailwind/react'
+import listener from "./telemetryListener"
 
 
 function Telemetry() {
@@ -15,9 +16,9 @@ function Telemetry() {
     const [currentLapTime, setCurrentLapTime] = useState('0')
 
     useEffect(() => {
-        const event = new EventSource("http://localhost:5000/api/listen")
-
-        event.addEventListener("update", e => {
+        // const telemetryListener = new EventSource("http://localhost:5000/api/listen")
+        let telemetryListener = listener.get()
+        telemetryListener.addEventListener("update", e => {
             // try {
             //     console.log(JSON.parse(e.data))
             // }catch (error){
@@ -62,7 +63,7 @@ function Telemetry() {
                 <Progress value={brake} color='red' className='w-1/2' />
             </div>
             <div className='flex justify-center mt-4'>
-                <Switch checked={drs} />
+                <Radio checked={drs} color="pink" />
             </div>
             {/* <h1 className='ml-20 pt-5'>
             {JSON.stringify(telemetry,null,2)}
