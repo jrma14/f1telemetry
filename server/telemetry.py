@@ -2,6 +2,7 @@ import code
 import socket
 import struct
 import json
+from bs4 import BeautifulSoup
 
 class telemetry:
     
@@ -292,8 +293,20 @@ class telemetry:
                 codec = self.participantsCodec + self.participantDataCodec * self.numParticipants
                 unpacked = self.unpack(codec, data)
                 res = list(unpacked[:1])
+                codec = codec[1:]
                 unpacked = unpacked[1:]
-                res.append(self.createArray(self.participantsCodec,unpacked,self.participantData,self.numParticipants))
+                for i in range(self.numParticipants):
+                    temp = []
+                    temp.extend(unpacked[:7])
+                    unpacked = unpacked[7:]
+                    name = b''.join(unpacked[:48]).decode('utf-8').strip('\x00')
+                    unpacked = unpacked[48:]
+                    temp.append(name)
+                    temp.extend(unpacked[:1])
+                    unpacked = unpacked[1:]
+                    temp = dict(list(zip(self.participantData,temp)))
+                    # unpacked = unpacked[self.numParticipants * len(codec):]
+                    res.append(temp)
                 return self.json(self.packetParticipantData,res,packetID)
             case 5: #setups ✓
                 codec = self.setupCodec * self.numParticipants

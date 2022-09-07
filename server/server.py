@@ -69,13 +69,6 @@ def calculatedifficulty():
         "difficulty": difficulty
         }
 
-
-listener = False
-
-@app.route("/api/stoplisten", methods=['get'])
-def stoplisten():
-    pass
-
 @app.route("/api/listen", methods=['get'])
 def listen():
     def stream():

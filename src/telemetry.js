@@ -34,7 +34,7 @@ function Telemetry() {
                     setDRS(temp.carTelemetryData[ind].drs === 1)
                 }
                 if (temp.packetType === 'Lap data') {
-                    console.log(temp)
+                    // console.log(temp)
                     setCurrentLapTime(temp.lapData[ind].currentLapTimeInMS/1000)
                 }
             } catch (error) {
