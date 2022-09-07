@@ -3,7 +3,7 @@ import Card from "./card"
 import { Link } from "react-router-dom"
 
 
-function Home(props) {
+function Calculator(props) {
     let avg = -1
 
     let sum = 0
@@ -85,4 +85,4 @@ function Home(props) {
     )
 }
 
-export default Home
+export default Calculator
