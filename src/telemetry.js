@@ -18,23 +18,27 @@ function Telemetry() {
         const event = new EventSource("http://localhost:5000/api/listen")
 
         event.addEventListener("update", e => {
-            // console.log(JSON.parse(e.data))
+            // try {
+            //     console.log(JSON.parse(e.data))
+            // }catch (error){
+            //     console.log(`Error:${error} \n ${e.data}`)
+            // }
             try {
                 let temp = JSON.parse(e.data)
                 setTelemetry(temp)
+                const ind = temp.header.playerCarIndex
                 if (temp.packetType === 'Car Telemetry') {
-                    // console.log(temp.throttle)
-                    setThrottle(temp.throttle * 100)
-                    setBrake(temp.brake * 100)
-                    setDRS(temp.drs === 1)
+                    setThrottle(temp.carTelemetryData[ind].throttle * 100)
+                    setBrake(temp.carTelemetryData[ind].brake * 100)
+                    setDRS(temp.carTelemetryData[ind].drs === 1)
                 }
                 if (temp.packetType === 'Lap data') {
-                    setCurrentLapTime(temp.currentLapTime)
-                    // console.log(temp)
+                    console.log(temp)
+                    setCurrentLapTime(temp.lapData[ind].currentLapTimeInMS/1000)
                 }
             } catch (error) {
-                console.log(error)
-                console.log(e.data)
+                // console.log(error)
+                // console.log(e.data)
             }
         }, true)
     }, [])

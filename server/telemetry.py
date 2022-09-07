@@ -7,7 +7,7 @@ class telemetry:
     
     numParticipants = -1
     
-    headerCodec = '<HBBBBQfIBB'
+    headerCodec = 'HBBBBQfIBB'
     headerSize = 24
     
     
@@ -15,63 +15,57 @@ class telemetry:
     tyreStintCodec = 'BBB'
     sessionHistoryCodec = 'BBBBBBB' #11
     
-    damageCodec = 'ffffBBBBBBBBBBBBBBBBBBBBBBBBBB'
-    carDamageCodec = '<' # 10
+    damageCodec = 'ffffBBBBBBBBBBBBBBBBBBBBBBBBBB' # 10
     
     
     lobbyCodec = 'BBB' + 'c' * 48 + 'BB'
-    lobbyInfoCodec = '<B'  # 9
+    lobbyInfoCodec = 'B'  # 9
     
     classificationCodec = 'BBBBBBIdBBBBBBBBBBBBBBBBBBBBBBBBBBB'
-    finalClassificationCodec = '<B'  # 8
+    finalClassificationCodec = 'B'  # 8
     
     
-    statusCodec = 'BBBBBfffHHBBHBBBbfBfffB'
-    carStatusCodec = '<'  # 7
+    statusCodec = 'BBBBBfffHHBBHBBBbfBfffB' # 7
     
 
     telemetryCodec = 'HfffBbHBBHHHHHBBBBBBBBHffffBBBB'
-    carTelemetryEndCodec = 'BBb'
-    carTelemetryCodec = '<'  # 6
+    carTelemetryEndCodec = 'BBb' # 6
     
 
-    setupCodec = 'BBBBffffBBBBBBBBffffBf'
-    carSetupsCodec = '<'  # 5
+    setupCodec = 'BBBBffffBBBBBBBBffffBf' # 5
     
     
     participantDataCodec = 'BBBBBBB' + 'c' * 48 + 'B'
-    participantsCodec = '<B'  # 4
+    participantsCodec = 'B'  # 4
     
     
-    fastestLapCodec = '<Bf'
-    retirementCodec = '<B'
-    teammateInPitsCodec = '<B'
-    raceWinnerCodec = '<B'
-    penaltyCodec = '<BBBBBBB'
-    speedTrapCodec = '<BfBBBf'
-    startLightsCodec = '<B'
-    driveThroughPenaltyServedCodec = '<B'
-    stopGoPenaltyServedCodec = '<B'
-    flashbackCodec = '<If'
-    buttonsCodec = '<B'
-    eventCodec = '<BBBB'  # 3 BfBBBBBBBBBBBfBBBfBBBIfI
+    fastestLapCodec = 'Bf'
+    retirementCodec = 'B'
+    teammateInPitsCodec = 'B'
+    raceWinnerCodec = 'B'
+    penaltyCodec = 'BBBBBBB'
+    speedTrapCodec = 'BfBBBf'
+    startLightsCodec = 'B'
+    driveThroughPenaltyServedCodec = 'B'
+    stopGoPenaltyServedCodec = 'B'
+    flashbackCodec = 'If'
+    buttonsCodec = 'B'
+    eventCodec = 'BBBB'  # 3 BfBBBBBBBBBBBfBBBfBBBIfI
     
 
     lapCodec = 'IIHHfffBBBBBBBBBBBBBBHHB'
-    lapDataEndCodec = 'BB'
-    lapDataCodec = '<'  # 2
+    lapDataEndCodec = 'BB' # 2
     
 
     weatherForecastSampleCodec = 'BBBbbbbB'
     marshalZoneCodec = 'fb'#num defined in the packet
     sessionCodecAfterWeather = 'BBIIIBBBBBBBBBBBBBBIB'
     sessionCodecAfterMarshal = 'BBB'
-    sessionCodec = '<BbbBHBbBHHBBBBBB'  # 1
+    sessionCodec = 'BbbBHBbBHHBBBBBB'  # 1
 
 
     extraPlayercarCodec = 'ffffffffffffffffffffffffffffff'
-    carMotionCodec = 'ffffffhhhhhhffffff' 
-    motionCodec = '<'  # 0
+    carMotionCodec = 'ffffffhhhhhhffffff' # 0
 
 
 
@@ -94,7 +88,7 @@ class telemetry:
     marshalZoneData = ['zoneStart','zoneFlag']
     weatherForecastSampleData = ['sessionType','timeOffset','weather','trackTemperature','trackTemperatureChange','airTemperature','airTemperatureChange',
     'rainPercentage']
-    packetSessionData = ['weather','airTemperature','totalLaps','trackLength','sessionType','trackID','formula','sessionTimeLeft','sessionDuration','pitSpeedLimit',
+    packetSessionData = ['weather','trackTemperature','airTemperature','totalLaps','trackLength','sessionType','trackID','formula','sessionTimeLeft','sessionDuration','pitSpeedLimit',
     'gamePaused','isSpectating','spectatorCarIndex','sliProNativeSupport','numMarshalZones','marshalZones','safetyCarStatus','networkGame','numWeatherForecastSamples',
     'weatherForecastSamples','forecastAccuracy','aiDifficulty','seasonLinkIdentifier','weekendLinkIdentifier','pitStopWindowIdealLap','pitStopLatestLap',
     'pitStopRejoinPosition','steeringAssist','brakingAssist','gearboxAssist','pitAssist','pitReleaseAssist','ersAssist','drsAssist','dynamicRacingLine','dynamicRacingLineType','gameMode','ruleSet','timeOfDay','sessionLength']
@@ -174,119 +168,203 @@ class telemetry:
 
 
     def unpack(self, codec, data):
-        return struct.unpack(codec, data[self.headerSize:self.headerSize + struct.calcsize(codec)])
+        codec = '<' + codec
+        return struct.unpack(codec, data[:struct.calcsize(codec)])
 
-    def unpackEvent(self, eventCode, data):
+    def unpackEvent(self, eventCode, data, packetID):
         match eventCode:
             case 'SSTA':
                 return 'Session Started'
             case 'SEND':
                 return 'Session Ended'
             case 'FTLP':
-                return self.unpack(self.fastestLapCodec,data)
+                unpacked = self.unpack(self.fastestLapCodec,data)
+                res = list(unpacked)
+                res.insert(0,eventCode)
+                return self.json(self.fastestLapData,res,packetID)
             case 'RTMT':
-                return self.unpack(self.retirementCodec,data)
+                unpacked = self.unpack(self.retirementCodec,data)
+                res = list(unpacked)
+                res.insert(0, eventCode)
+                return self.json(self.retirementData, res, packetID)
             case 'DRSE':
                 return 'DRS Enabled'
             case 'DRSD':
                 return 'DRS Disabled'
             case 'TMPT':
-                return self.unpack(self.teammateInPitsCodec,data)
+                unpacked = self.unpack(self.teammateInPitsCodec,data)
+                res = list(unpacked)
+                res.insert(0, eventCode)
+                return self.json(self.teammateInPitsData, res, packetID)
             case 'CHQF':
                 return 'Chequered Flag'
             case 'RCWN':
-                return self.unpack(self.raceWinnerCodec,data)
+                unpacked = self.unpack(self.raceWinnerCodec,data)
+                res = list(unpacked)
+                res.insert(0, eventCode)
+                return self.json(self.raceWinnerData, res, packetID)
             case 'PENA':
-                return self.unpack(self.penaltyCodec,data)
+                unpacked = self.unpack(self.penaltyCodec,data)
+                res = list(unpacked)
+                res.insert(0, eventCode)
+                return self.json(self.penalty, res, packetID)
             case 'SPTP':
-                return self.unpack(self.speedTrapCodec,data)
+                unpacked = self.unpack(self.speedTrapCodec,data)
+                res = list(unpacked)
+                res.insert(0, eventCode)
+                return self.json(self.speedTrapData, res, packetID)
             case 'STLG':
-                return self.unpack(self.startLightsCodec,data)
+                unpacked = self.unpack(self.startLightsCodec,data)
+                res = list(unpacked)
+                res.insert(0, eventCode)
+                return self.json(self.startLightsData, res, packetID)
             case 'LGOT':
                 return 'Lights out and away we go!'
             case 'DTSV':
-                return self.unpack(self.driveThroughPenaltyServedCodec,data)
+                unpacked = self.unpack(self.driveThroughPenaltyServedCodec,data)
+                res = list(unpacked)
+                res.insert(0, eventCode)
+                return self.json(self.driveThroughPenaltyServedData, res, packetID)
             case 'SGSV':
-                return self.unpack(self.stopGoPenaltyServedCodec,data)
+                unpacked = self.unpack(self.stopGoPenaltyServedCodec,data)
+                res = list(unpacked)
+                res.insert(0, eventCode)
+                return self.json(self.stopGoPenaltyServedData, res, packetID)
             case 'FLBK':
-                return self.unpack(self.flashbackCodec,data)
+                unpacked = self.unpack(self.flashbackCodec,data)
+                res = list(unpacked)
+                res.insert(0, eventCode)
+                return self.json(self.flashbackData, res, packetID)
             case 'BUTN':
-                return self.unpack(self.buttonsCodec,data)
+                unpacked = self.unpack(self.buttonsCodec,data)
+                res = list(unpacked)
+                res.insert(0,eventCode)
+                return self.json(self.buttons,unpacked, packetID)
             case _:
                 print('unknown event code')
                 
 
-    def decodePacket(self, data, packetID):
+    def decodePacket(self, data):
+        self.header = struct.unpack('<' + self.headerCodec, data[:self.headerSize])
+        self.header_dict = dict(list(zip(self.headerData,self.header)))
+        self.playerCarIndex = self.header[8]
+        self.secondPlayerCarIndex = self.header[9]
+        packetID = self.header[4]
+        data = data[self.headerSize:]
         match packetID:
-            case 0: #motion
-                codec = self.motionCodec + ((self.carMotionCodec)*self.numParticipants)
-                if self.secondPlayerCarIndex != 255: codec += self.extraPlayercarCodec
-                return self.unpack(codec,data)
+            case 0: #motion ✓
+                codec = self.carMotionCodec*22 + self.extraPlayercarCodec
+                # if self.secondPlayerCarIndex != 255: codec += self.extraPlayercarCodec
+                unpacked = self.unpack(codec,data)
+
+                res = [self.createArray(self.carMotionCodec,unpacked,self.carMotionData,self.numParticipants)]
+                for i in range(5):
+                    res.append(unpacked[:4])
+                    unpacked = unpacked[4:]
+                res.extend(unpacked)
+                return self.json(self.packetMotionData,res,packetID)
             case 1: #session
                 sessionData = self.unpack(self.sessionCodec,data)
                 numMarshalZones = sessionData[len(sessionData) - 1]
-                codec = self.sessionCodec + (self.marshalZoneCodec) * numMarshalZones + self.sessionCodecAfterMarshal
+                codec = self.sessionCodec + self.marshalZoneCodec * numMarshalZones + self.sessionCodecAfterMarshal
                 sessionData = self.unpack(codec, data)
                 numWeatherForecastSamples = sessionData[len(sessionData) - 1]
-                codec += (self.weatherForecastSampleCodec) * numWeatherForecastSamples + self.sessionCodecAfterWeather
-                return self.unpack(codec,data)
-            case 2: #lap data
-                codec = self.lapDataCodec + (self.lapCodec) * self.numParticipants + self.lapDataEndCodec
-                return self.unpack(codec,data)
-            case 3: #Event
-                eventCode = ''.join(list(map(lambda i: chr(i),struct.unpack(self.eventCodec,data))))
-                return self.unpackEvent(eventCode, data[4:])
-            case 4: #participants
-                self.numParticipants = self.unpack(self.participantsCodec,data)
-                codec = self.participantsCodec + (self.participantDataCodec) * self.numParticipants
-                return self.unpack(codec, data)
-            case 5: #setups
-                codec = self.carSetupsCodec + (self.setupCodec) * self.numParticipants
-                return self.unpack(codec,data)
-            case 6: #telemetry
-                codec = self.carTelemetryCodec + (self.telemetryCodec) * self.numParticipants + self.carTelemetryEndCodec
-                return self.unpack(codec,data)
-            case 7: #status
-                return self.unpack(self.carSetupsCodec + self.statusCodec * self.numParticipants,data)
+                codec += self.weatherForecastSampleCodec * numWeatherForecastSamples + self.sessionCodecAfterWeather
+                unpacked = self.unpack(codec,data)
+                res = list(unpacked[:16])
+                unpacked = unpacked[16:]
+                res.append(self.createArray(self.marshalZoneCodec,unpacked,self.marshalZoneData,numMarshalZones))
+                res.extend(unpacked[:3])
+                res.append(self.createArray(self.weatherForecastSampleCodec,unpacked,self.weatherForecastSampleData,numWeatherForecastSamples))
+                res.extend(unpacked)
+                return self.json(self.packetSessionData,res,packetID)
+            case 2: #lap data ✓
+                codec = self.lapCodec * self.numParticipants + self.lapDataEndCodec
+                unpacked = self.unpack(codec,data)
+                res = [self.createArray(self.lapCodec, unpacked, self.lapData, self.numParticipants)]
+                res.extend(unpacked)
+                return self.json(self.packetLapData,res,packetID)
+            case 3: #Event ✓
+                eventCode = ''.join(list(map(lambda i: chr(i),self.unpack(self.eventCodec,data))))
+                return self.unpackEvent(eventCode, data[4:], packetID)
+            case 4: #participants ✓
+                self.numParticipants = self.unpack(self.participantsCodec,data)[0]
+                codec = self.participantsCodec + self.participantDataCodec * self.numParticipants
+                unpacked = self.unpack(codec, data)
+                res = list(unpacked[:1])
+                unpacked = unpacked[1:]
+                res.append(self.createArray(self.participantsCodec,unpacked,self.participantData,self.numParticipants))
+                return self.json(self.packetParticipantData,res,packetID)
+            case 5: #setups ✓
+                codec = self.setupCodec * self.numParticipants
+                unpacked = self.unpack(codec,data)
+                return self.json(self.packetCarSetupData,self.createArray(self.setupCodec,unpacked,self.carSetupData,self.numParticipants),packetID)
+            case 6: #telemetry ✓
+                codec = self.telemetryCodec * self.numParticipants + self.carTelemetryEndCodec
+                unpacked = self.unpack(codec,data)
+                res = [self.createArray(self.telemetryCodec,unpacked,self.carTelemetryData,self.numParticipants)]
+                res.extend(unpacked[:3])
+                # print(self.json(self.packetCarTelemetryData,res,packetID))
+                return self.json(self.packetCarTelemetryData,res,packetID)
+            case 7: #status ✓
+                unpacked = self.unpack(self.statusCodec * self.numParticipants,data)
+                return self.json(self.packetCarStatusData,
+                                 self.createArray(self.statusCodec, unpacked, self.carStatusData,
+                                                  self.numParticipants), packetID)
             case 8: #final classification
-                codec = self.finalClassificationCodec + (self.classificationCodec) * self.numParticipants
-                return self.unpack(codec,data)
+                codec = self.finalClassificationCodec + self.classificationCodec * self.numParticipants
+                unpacked = self.unpack(codec,data)
+                res = list(unpacked[:1])
+                unpacked = unpacked[1:]
+                res.append(self.createArray(self.classificationCodec,unpacked,self.finalClassificationData,self.numParticipants))
+                return self.json(self.packetFinalClassificationData,res, packetID)
             case 9: #lobby
-                codec = self.lobbyInfoCodec + (self.lobbyCodec) * self.numParticipants
-                return self.unpack(codec,data)
-            case 10: #damage
-                return self.unpack(self.carDamageCodec + self.damageCodec * self.numParticipants,data)
-            case 11: #session history
+                codec = self.lobbyInfoCodec + self.lobbyCodec * self.numParticipants
+                unpacked = self.unpack(codec,data)
+                res = list(unpacked[:1])
+                unpacked = unpacked[1:]
+                res.append(self.createArray(self.lobbyCodec,unpacked,self.lobbyInfoData,self.numParticipants))
+                return self.json(self.packetLobbyInfoData, res, packetID)
+            case 10: #damage ✓
+                unpacked = self.unpack(self.damageCodec * self.numParticipants,data)
+                return self.json(self.packetCarDamageData,
+                                 self.createArray(self.damageCodec, unpacked, self.carDamageData,
+                                                  self.numParticipants), packetID)
+            case 11: #session history ✓
                 temp = self.unpack(self.sessionHistoryCodec,data)
                 numLaps = temp[1]
                 numTyrestints = temp[2]
-                return self.unpack(self.sessionHistoryCodec + self.lapHistoryCodec * numLaps + self.tyreStintCodec * numTyrestints,data)
+                unpacked = self.unpack(self.sessionHistoryCodec + self.lapHistoryCodec * numLaps + self.tyreStintCodec * numTyrestints,data)
+                res = list(unpacked[:7])
+                unpacked = unpacked[7:]
+                res.append(self.createArray(self.lapHistoryCodec,unpacked,self.lapHistoryData,numLaps))
+                res.append(self.createArray(self.tyreStintCodec,unpacked,self.tyreStintHistoryData,numTyrestints))
+                return self.json(self.packetSessionHistoryData,res,packetID)
             case _:
                 print('unknown packet id')
 
-    def zipPacket(self, data, packetID):
-        try:
-            zipped = list(zip(self.dataPacks[packetID],list(data)))
-            return zipped
-        except:
-            print('Could not zip, returning unpacked data')
-            return data
+    def json(self,data,res, packetID):
+        res_dict = dict(list(zip(data, res)))
+        res_dict.update({"packetType": self.packetNames[packetID]})
+        res_dict.update({"header":self.header_dict})
+        return json.dumps(res_dict)
+
+    def createArray(self, codec, unpacked, data, num):
+        temp = []
+        for i in range(num):
+            temp.append(dict(list(zip(data,list(unpacked[i*len(codec):(i+1)*len(codec)])))))
+        unpacked = unpacked[num*len(codec):]
+        return temp
 
     def listen(self):
+        # res = self.zipPacket(self.decodePacket(data, packetID),packetID)
+        # res_dict = dict(res)
+        # res_dict.update({"packetType":self.packetNames[packetInd]})
+        # res_json = json.dumps(res_dict)
         data = self.sock.recvfrom(2048)[0]
-        header = struct.unpack(self.headerCodec, data[:self.headerSize])
-        self.playerCarIndex = header[8]
-        self.secondPlayerCarIndex = header[9]
-        packetID = header[4]
-        data = data[self.headerSize:]
-
-        res = self.zipPacket(self.decodePacket(data, packetID),packetID)
-        res_dict = dict(res)
-        res_dict.update({"packetType":self.packetNames[codecInd]})
-        res_json = json.dumps(res_dict)
-        return res_json
+        return self.decodePacket(data)
             
 if __name__ == "__main__":
     tel = telemetry("127.0.0.1",20777)
     while True:
-        tel.test()
+        tel.listen()
