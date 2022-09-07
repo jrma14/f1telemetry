@@ -75,35 +75,81 @@ class telemetry:
 
 
 
-    dataPacks = [
-    ['worldPositionX', 'worldPositionY', 'worldPositionZ', 'worldVelocityX', 'worldVelocityY', 'worldVelocityZ',
+    headerData = ['packetFormat','gameMajorVersion','gameMinorVersion','packetVersion','packetID','sessionUID','sessionTime','frameIdentifier','playerCarIndex','secondaryPlayerCarIndex']
+
+    carMotionData = ['worldPositionX', 'worldPositionY', 'worldPositionZ', 'worldVelocityX', 'worldVelocityY', 'worldVelocityZ',
      'worldForwardDirX', 'worldForwardDirY', 'worldForwardDirZ', 'worldRightDirX', 'worldRightDirY', 'worldRightDirZ',
-     'gForceLateral', 'gForceLongitudinal', 'gForceVertical', 'yaw', 'pitch', 'roll'],
-    [],
-    ['lastLapTime', 'currentLapTime', 'sector1TimeInMS', 'sector2TimeInMS', 'bestLapTime', 'bestLapNum',
-     'bestLapSector1TimeInMS', 'bestLapSector2TimeInMS', 'bestLapSector3TimeInMS', 'bestOverallSector1TimeInMS',
-     'bestOverallSector1LapNum', 'bestOverallSector2TimeInMS', 'bestOverallSector2LapNum', 'bestOverallSector3TimeInMS',
-     'bestOverallSector3LapNum', 'lapDistance', 'totalDistance', 'safetycarDelta', 'carPosition', 'currentLapNum',
-     'pitStatus', 'sector', 'currentLapInvalid', 'penalties', 'gridPosition', 'driverStatus', 'resultStatus'],
-    [],
-    [],
-    ['frontWing', 'rearWing', 'onThrottle', 'offThrottle', 'frontCamber', 'rearCamber', 'frontToe', 'rearToe',
+     'gForceLateral', 'gForceLongitudinal', 'gForceVertical', 'yaw', 'pitch', 'roll']
+    packetMotionData = ['carMotionData',
+    'suspensionPosition',
+    'suspensionVelocity',
+    'suspensionAcceleration',
+    'wheelSpeed',
+    'wheelSlip',
+    'localVelocityX','localVelocityY','localVelocityZ',
+    'angularVelocityX','angularVelocityY','angularVelocityZ',
+    'angularAccelerationX','angularAccelerationY','angularAccelerationZ',
+    'frontWheelsAngle']
+
+    marshalZoneData = ['zoneStart','zoneFlag']
+    weatherForecastSampleData = ['sessionType','timeOffset','weather','trackTemperature','trackTemperatureChange','airTemperature','airTemperatureChange',
+    'rainPercentage']
+    packetSessionData = ['weather','airTemperature','totalLaps','trackLength','sessionType','trackID','formula','sessionTimeLeft','sessionDuration','pitSpeedLimit',
+    'gamePaused','isSpectating','spectatorCarIndex','sliProNativeSupport','numMarshalZones','marshalZones','safetyCarStatus','networkGame','numWeatherForecastSamples',
+    'weatherForecastSamples','forecastAccuracy','aiDifficulty','seasonLinkIdentifier','weekendLinkIdentifier','pitStopWindowIdealLap','pitStopLatestLap',
+    'pitStopRejoinPosition','steeringAssist','brakingAssist','gearboxAssist','pitAssist','pitReleaseAssist','ersAssist','drsAssist','dynamicRacingLine','dynamicRacingLineType','gameMode','ruleSet','timeOfDay','sessionLength']
+
+    lapData = ['lastLapTimeInMS','currentLapTimeInMS','sector1TimeInMS','sector2TimeInMS','lapDistance','totalDistance',
+    'safetyCarDelta','carPosition','currentLapNum','pitStatus','numPitStops','sector','currentLapInvalid','penalties','warnings','numUnservedDriveThroughPenalties',
+    'numUnservedStopGoPenalties','girdPosition','driverStatus','resultStatus','pitLaneTimerActive','pitLaneTimeInLaneInMS','pitStopTimerInMS','pitStopShouldServePenalties']
+    packetLapData = ['lapData','timeTrialPBCarIndex','timeTrialRivalCarIndex']
+
+    fastestLapData = ['vehicleIndex','lapTime']
+    retirementData = ['vehicleIndex']
+    teammateInPitsData = ['vehicleIndex']
+    raceWinnerData = ['vehicleIndex']
+    penalty = ['penaltyType','infringementType','vehicleIndex','otherVehicleIndex','time','lapNum','placesgained']
+    speedTrapData = ['vehicleIndex','speed','isOverallFastestInSession','isDriverFastestInSession','fastestVehicleIndexInSession','fastestSpeedInSession']
+    startLightsData = ['numLights']
+    driveThroughPenaltyServedData = ['vehicleIndex']
+    stopGoPenaltyServedData = ['vehicleIndex']
+    flashbackData = ['flashbackFrameIdentifier','flashbackSessionTime']
+    buttons = ['buttonStatus']
+    packetEventData = ['eventStringCode','eventDetails']
+
+    participantData = ['aiControlled','driverID','networkID','teamID','myTeam','raceNumber','nationality','name','yourTelemetry']
+    packetParticipantData = ['numActiveCars','participants']
+
+    carSetupData =     ['frontWing', 'rearWing', 'onThrottle', 'offThrottle', 'frontCamber', 'rearCamber', 'frontToe', 'rearToe',
      'frontSuspension', 'rearSuspension', 'frontAntiRollBar', 'rearAntiRollBar', 'frontSuspensionHeight',
      'rearSuspensionHeight', 'brakePressure', 'brakeBias', 'rearLeftTyrePressure', 'rearRightTyrePressure',
-     'frontLeftTyrePressure', 'frontRightTyrePressure', 'ballast', 'fuelLoad'],
-    ['speed', 'throttle', 'steer', 'brake', 'clutch', 'gear', 'engineRPM', 'drs', 'revLightsPercent',
-     'brakesTemperature', 'tyresSurfaceTemperature', 'tyresInnerTemperature', 'engineTemperature', 'tyresPressure',
-     'surfaceType'],
-    ['tractionControl', 'antiLockBrakes', 'fuelMix', 'frontBrakeBias', 'pitLimiterStatus', 'fuelInTank',
-     'fuelCapacaity', 'fuelRemainingLaps', 'maxRPM', 'idleRPM', 'maxGears', 'drsAllowed', 'drsAvtivationDistance',
-     'tyresWear', 'actualTyreCompound', 'visualTyreCompound', 'tyresAgeLaps', 'tyresDamage', 'frontLeftWingDamage',
-     'frontRightWingDamage', 'rearWingDamage', 'drsFault', 'engineDamage', 'gearBoxDamage', 'vehicleFiaFlags',
-     'ersStoreEnergy', 'ersDeployMode', 'ersHarvestedThisLapMGUK', 'ersHarvestedThisLapMGUH', 'ersDeployedThisLap'],
-    ['position', 'numLaps', 'gridPosition', 'points', 'numPitStops', 'resultStatus', 'bestLapTime', 'totalRaceTime',
-     'penaltiesTime', 'numPenalties', 'numTyreStints', 'tyreStintsActual', 'tyreStintsVisual'],
-    ['aiControlled', 'teamId', 'nationality', 'name', 'readyStatus']]
+     'frontLeftTyrePressure', 'frontRightTyrePressure', 'ballast', 'fuelLoad']
+    packetCarSetupData = ['carSetups']
 
+    carTelemetryData = ['speed', 'throttle', 'steer', 'brake', 'clutch', 'gear', 'engineRPM', 'drs', 'revLightsPercent',
+    'revLightsBitValue','brakesTemperature', 'tyresSurfaceTemperature', 'tyresInnerTemperature', 'engineTemperature', 'tyresPressure',
+    'surfaceType']
+    packetCarTelemetryData = ['carTelemetryData','mfdPanelIndex','mfdPanelIndexSecondaryPlayer','suggestedGear']
+
+    carStatusData = ['tractionControl', 'antiLockBrakes', 'fuelMix', 'frontBrakeBias', 'pitLimiterStatus', 'fuelInTank',
+     'fuelCapacaity', 'fuelRemainingLaps', 'maxRPM', 'idleRPM', 'maxGears', 'drsAllowed', 'drsAvtivationDistance',
+     'tyresWear', 'actualTyreCompound', 'visualTyreCompound', 'tyresAgeLaps', 'vehicleFiaFlags', 'ersStoreEnergy', 'ersDeployMode',
+     'ersHarvestedThisLapMGUK', 'ersHarvestedThisLapMGUH', 'ersDeployedThisLap', 'networkPaused']
+    packetCarStatusData = ['carStatusData']
     
+    finalClassificationData = ['position', 'numLaps', 'gridPosition', 'points', 'numPitStops', 'resultStatus', 'bestLapTimeInMS', 'totalRaceTime',
+     'penaltiesTime', 'numPenalties', 'numTyreStints', 'tyreStintsActual', 'tyreStintsVisual', 'tyreStintsEndLaps']
+    packetFinalClassificationData = ['numCars','classificationData']
+
+    lobbyInfoData = ['aiControlled', 'teamId', 'nationality', 'name', 'readyStatus']
+    packetLobbyInfoData = ['numPlayers','lobbyPlayers']
+
+    carDamageData = ['tyresWear','tyresDamage','brakesDamage','frontLeftWingDamage','frontRightWingDamage','rearWingDamage','floorDamage','diffuserDamage','sidepodDamage','drsFault','ersFault','gearBoxDamage','engineDamage','engineMGUHWear','engineESWear','engineCEWear','engineICEWear','engineMGUKWear','engineTCWear','engineBlown','engineSeized']
+    packetCarDamageData = ['carDamageData']
+
+    lapHistoryData = ['lapTimeInMS','sector1TimeInMS','sector2TimeInMS','sector4TimeInMS','lapValidBitFlags']
+    tyreStintHistoryData = ['endLap','tyreActualCompound','tyreVisualCompound']
+    packetSessionHistoryData = ['carIndex','numLaps','numTyreStints','bestLapTimeLapNum','bestSector1LapNum','bestSector2LapNum','bestSector3LapNum','lapHistoryData','tyreStintsHistoryData']
     
     packetNames = ['Motion',
     'Session',
