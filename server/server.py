@@ -79,7 +79,7 @@ def listen():
             yield f"id:1\ndata: {msg}\nevent: update\n\n"
             # counter += 1
             # time.sleep(1/60)
-    if not listener: return Response(stream(), mimetype='text/event-stream')
+    return Response(stream(), mimetype='text/event-stream')
 
 
 if __name__ == "__main__":

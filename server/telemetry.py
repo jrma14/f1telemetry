@@ -2,7 +2,6 @@ import code
 import socket
 import struct
 import json
-from bs4 import BeautifulSoup
 
 class telemetry:
     
@@ -99,17 +98,17 @@ class telemetry:
     'numUnservedStopGoPenalties','girdPosition','driverStatus','resultStatus','pitLaneTimerActive','pitLaneTimeInLaneInMS','pitStopTimerInMS','pitStopShouldServePenalties']
     packetLapData = ['lapData','timeTrialPBCarIndex','timeTrialRivalCarIndex']
 
-    fastestLapData = ['vehicleIndex','lapTime']
-    retirementData = ['vehicleIndex']
-    teammateInPitsData = ['vehicleIndex']
-    raceWinnerData = ['vehicleIndex']
-    penalty = ['penaltyType','infringementType','vehicleIndex','otherVehicleIndex','time','lapNum','placesgained']
-    speedTrapData = ['vehicleIndex','speed','isOverallFastestInSession','isDriverFastestInSession','fastestVehicleIndexInSession','fastestSpeedInSession']
-    startLightsData = ['numLights']
-    driveThroughPenaltyServedData = ['vehicleIndex']
-    stopGoPenaltyServedData = ['vehicleIndex']
-    flashbackData = ['flashbackFrameIdentifier','flashbackSessionTime']
-    buttons = ['buttonStatus']
+    fastestLapData = ['eventCode','vehicleIndex','lapTime']
+    retirementData = ['eventCode','vehicleIndex']
+    teammateInPitsData = ['eventCode','vehicleIndex']
+    raceWinnerData = ['eventCode','vehicleIndex']
+    penalty = ['eventCode','penaltyType','infringementType','vehicleIndex','otherVehicleIndex','time','lapNum','placesgained']
+    speedTrapData = ['eventCode','vehicleIndex','speed','isOverallFastestInSession','isDriverFastestInSession','fastestVehicleIndexInSession','fastestSpeedInSession']
+    startLightsData = ['eventCode','numLights']
+    driveThroughPenaltyServedData = ['eventCode','vehicleIndex']
+    stopGoPenaltyServedData = ['eventCode','vehicleIndex']
+    flashbackData = ['eventCode','flashbackFrameIdentifier','flashbackSessionTime']
+    buttons = ['eventCode','buttonStatus']
     packetEventData = ['eventStringCode','eventDetails']
 
     participantData = ['aiControlled','driverID','networkID','teamID','myTeam','raceNumber','nationality','name','yourTelemetry']
@@ -165,6 +164,7 @@ class telemetry:
 
         self.sock = socket.socket(socket.AF_INET,  # Internet
                             socket.SOCK_DGRAM)  # UDP
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.bind((self.host, self.port))
 
 
@@ -175,9 +175,9 @@ class telemetry:
     def unpackEvent(self, eventCode, data, packetID):
         match eventCode:
             case 'SSTA':
-                return 'Session Started'
+                return self.json(["Message","eventCode"],['Session Started',eventCode],packetID)
             case 'SEND':
-                return 'Session Ended'
+                return self.json(["Message","eventCode"],['Session Ended',eventCode],packetID)
             case 'FTLP':
                 unpacked = self.unpack(self.fastestLapCodec,data)
                 res = list(unpacked)
@@ -189,16 +189,16 @@ class telemetry:
                 res.insert(0, eventCode)
                 return self.json(self.retirementData, res, packetID)
             case 'DRSE':
-                return 'DRS Enabled'
+                return self.json(["Message","eventCode"],['DRS Enabled',eventCode],packetID)
             case 'DRSD':
-                return 'DRS Disabled'
+                return self.json(["Message","eventCode"],['DRS Disabled',eventCode],packetID)
             case 'TMPT':
                 unpacked = self.unpack(self.teammateInPitsCodec,data)
                 res = list(unpacked)
                 res.insert(0, eventCode)
                 return self.json(self.teammateInPitsData, res, packetID)
             case 'CHQF':
-                return 'Chequered Flag'
+                return self.json(["Message","eventCode"],['Chequered Flag',eventCode],packetID)
             case 'RCWN':
                 unpacked = self.unpack(self.raceWinnerCodec,data)
                 res = list(unpacked)
@@ -220,7 +220,7 @@ class telemetry:
                 res.insert(0, eventCode)
                 return self.json(self.startLightsData, res, packetID)
             case 'LGOT':
-                return 'Lights out and away we go!'
+                return self.json(["Message","eventCode"],['Lights out and away we go!',eventCode],packetID)
             case 'DTSV':
                 unpacked = self.unpack(self.driveThroughPenaltyServedCodec,data)
                 res = list(unpacked)
@@ -240,7 +240,7 @@ class telemetry:
                 unpacked = self.unpack(self.buttonsCodec,data)
                 res = list(unpacked)
                 res.insert(0,eventCode)
-                return self.json(self.buttons,unpacked, packetID)
+                return self.json(self.buttons,res, packetID)
             case _:
                 print('unknown event code')
                 
@@ -318,6 +318,7 @@ class telemetry:
                 res = [self.createArray(self.telemetryCodec,unpacked,self.carTelemetryData,self.numParticipants)]
                 res.extend(unpacked[:3])
                 # print(self.json(self.packetCarTelemetryData,res,packetID))
+                # print(res)
                 return self.json(self.packetCarTelemetryData,res,packetID)
             case 7: #status ✓
                 unpacked = self.unpack(self.statusCodec * self.numParticipants,data)

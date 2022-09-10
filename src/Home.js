@@ -10,12 +10,12 @@ function Home(props) {
             </h1>
             <div className="flex justify-center items-center h-screen">
                 <Link to={"/telemetry"}>
-                    <Button variant="gradient" color="pink">
+                    <Button variant="gradient" color="pink" className="rounded-full">
                         Telemetry
                     </Button>
                 </Link>
                 <Link to={"/calculator"}>
-                    <Button variant="gradient" color="pink" className="ml-5">
+                    <Button variant="gradient" color="pink" className="ml-5 rounded-full">
                         Difficulty Calculator
                     </Button>
                 </Link>
