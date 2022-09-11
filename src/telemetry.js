@@ -67,7 +67,7 @@ function Telemetry() {
                 <div className='flex justify-center' id='steeringWheel'>
                     <img src='https://cdn.discordapp.com/attachments/701535716022288436/1017215503888027709/wheel.png' alt='wheel' className={` w-[50px] h-[50px] rotate-[${telemetry[playerCarIndex.current]?Math.round(telemetry[playerCarIndex.current].steer * 180):0}deg]`} />
                 </div>
-                <h1>
+                <h1 className='text-center'>
                 {telemetry[playerCarIndex.current]? Math.round(telemetry[playerCarIndex.current].steer * 180):0}
                 </h1>
             </div>
