@@ -55,7 +55,7 @@ function Form(props){
 
     return(
         <div className="text-center p-10">
-            <Link to="/">
+            <Link to="/menu">
                 <img className="left-2 h-[40px] w-[40px] absolute top-1" src='https://cdn-icons-png.flaticon.com/512/60/60817.png'/>
             </Link>
             <form className="font-sans text-3xl font-semibold text-gray-900" onSubmit={handleSubmit}>

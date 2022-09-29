@@ -39,7 +39,7 @@ function Telemetry() {
         return (
             <div className="">
                 <div className='flex justify-center'>
-                    <Link to="/">
+                    <Link to="/menu">
                         <img className="left-2 h-[40px] w-[40px] top-1" alt='home button' src='https://cdn-icons-png.flaticon.com/512/60/60817.png' />
                     </Link>
                 </div>

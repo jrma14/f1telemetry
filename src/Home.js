@@ -9,7 +9,7 @@ function Home(props) {
                 F1 Telemetry
             </h1>
             <div className="flex justify-center items-center h-screen">
-                <Link to={"/telemetry"}>
+                <Link to={"/"}>
                     <Button variant="gradient" color="pink" className="rounded-full">
                         Telemetry
                     </Button>

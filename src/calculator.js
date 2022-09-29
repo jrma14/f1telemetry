@@ -19,7 +19,7 @@ function Calculator(props) {
     return (
         <div className="text-center">
             <div className='flex justify-center'>
-                <Link to="/">
+                <Link to="/menu">
                     <img className="left-2 h-[40px] w-[40px] top-1" src='https://cdn-icons-png.flaticon.com/512/60/60817.png' />
                 </Link>
             </div>
@@ -72,18 +72,6 @@ function Calculator(props) {
                         </button>
                     </Link>
                 </footer>
-                <Link to="/telemetry">
-                    <button>
-                        Telemetry
-                    </button>
-                </Link>
-                <div>
-                    <Link to="/test">
-                        <button>
-                            Test
-                        </button>
-                    </Link>
-                </div> 
             </div>
         </div>
 

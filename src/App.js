@@ -39,12 +39,11 @@ const App = () => {
         <ThemeProvider>
             <Router>
                 <Routes>
-                    <Route path="/" element={<Home />}/>
+                    <Route path="/" element={<Telemetry />}/>
                     <Route path="/calculator" element={<Calculator lapTimes={laptimes} setLapTimes={settime} />} />
                     <Route path="/form" element={<Form laptimes={laptimes} setLaptimes={settime} />} />
                     <Route path="/credits" element={<Credits />} />
-                    <Route path="/telemetry" element={<Telemetry />} />
-                    <Route path="/test" element={<Test />} />
+                    <Route path="/menu" element={<Home />} />
                 </Routes>
             </Router>
         </ThemeProvider>
